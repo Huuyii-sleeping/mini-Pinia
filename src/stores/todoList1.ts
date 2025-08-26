@@ -2,12 +2,16 @@ import { defineStore } from "../../src/pinia";
 
 export default defineStore('todoList1', {
     state: () => ({
-        todoList: [] as any
+        todoList: [] as any,
+        count : 0 as number
     }),
     // computed
     getters: {
-        count(): any {
+        length(): any {
             return this.todoList.length
+        },
+        doubleCount(): any{
+            return this.count * 2
         }
     },
     actions: {

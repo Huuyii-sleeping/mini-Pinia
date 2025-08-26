@@ -3,8 +3,9 @@ import { computed, ref } from "vue";
 
 export default defineStore('todoList2', () => {
     const todoList = ref<any[]>([])
-    const count = computed(() => todoList.value.length)
-
+    const count = ref(0)
+    const length = computed(() => todoList.value.length)
+    const doubleCount = computed(() => count.value * 2)
     const addTodo = (todo: any) => {
         todoList.value.unshift(todo)
     }
@@ -19,6 +20,6 @@ export default defineStore('todoList2', () => {
         todoList.value = todoList.value.filter((todo: any) => todo.id !== id)
     }
     return {
-        todoList, count, addTodo, toggleTodo, removeTodo
+        doubleCount, length, todoList, count, addTodo, toggleTodo, removeTodo
     }
 })

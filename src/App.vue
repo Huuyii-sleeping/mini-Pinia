@@ -6,13 +6,18 @@
     </div>
     <input type="text" v-model="removeId">
     <button @click="remove(removeId)">delete</button>
+    <hr>
+    <count1></count1>
+    <hr>
+    <count2></count2>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import todoListStore from './stores/todoList2';
+import count1 from './components/count1.vue'
+import count2 from './components/count2.vue'
+import todoListStore from './stores/todoList1';
 const usetodoList = todoListStore()
-console.log(usetodoList)
 const addTodothing = ref('')
 const removeId = ref('')
 const add = (todoing: any) => {
