@@ -42,5 +42,5 @@ export function createSubscribe(pinia: any, id: any, scope: any) {
                 callback({ storeId: id }, state)
             }, options)
         })
-    }
+    } 
 }
