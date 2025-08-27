@@ -3,6 +3,7 @@
     <div>{{ count1.count }}</div>
     <div>{{ count1.doubleCount }}</div>
     <button @click="change">add</button>
+    <button @click="reset">reset</button>
 </template>
 
 <script setup lang="ts">
@@ -12,8 +13,13 @@ const change = () => {
     count1.$patch((state: any) => {
         state.count = 600
     })
-    console.log(count1.count)
 }
+const reset = () => {
+    count1.$reset()
+}
+count1.$subscribe(() => {
+    console.log(111)
+})
 </script>
 
 <style scoped lang="scss">

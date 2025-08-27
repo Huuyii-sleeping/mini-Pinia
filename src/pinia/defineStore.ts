@@ -1,7 +1,7 @@
 import { computed, effectScope, inject, isReactive, isRef, reactive, toRefs } from "vue"
 import { formatArgs, isComputed, isFunction } from "./utils"
 import { piniaSymbol } from "./global"
-import { createPatch } from "./api"
+import { createPatch, createReset, createSubscribe } from "./api"
 
 export function defineStore(...args: any[]) { // return function
     const { id, options, setup } = formatArgs(args)
@@ -18,7 +18,7 @@ export function defineStore(...args: any[]) { // return function
             if (isSetup) {
                 createSetupStore(pinia, id, setup)
             } else {
-                createOptions(pinia, id, options)
+                createOptionsStore(pinia, id, options)
             }
         }
         return pinia.store.get(id)
@@ -26,23 +26,25 @@ export function defineStore(...args: any[]) { // return function
     return useStore
 }
 
-function createApis(pinia: any, id: any) {
+function createApis(pinia: any, id: any, scope: any) {
     return {
-        $patch: createPatch(pinia, id)
+        $patch: createPatch(pinia, id),
+        $subscribe: createSubscribe(pinia, id, scope)
     }
 }
 
 function createSetupStore(pinia: any, id: any, setup: any) {
     const setupStore = setup()
-    const store = reactive(createApis(pinia, id))
-
+    let store
     let storeScope
+
     const result = pinia.scope.run(() => {
         storeScope = effectScope()
+        store = reactive(createApis(pinia, id, storeScope))
         return storeScope.run(() => complierSetup(pinia, id, setupStore))
     })
 
-    return setStore(pinia, store, id, result)
+    return setStore(pinia, store, id, result, setup, true)
 }
 
 function complierSetup(pinia: any, id: any, setupStore: any) {
@@ -59,24 +61,26 @@ function complierSetup(pinia: any, id: any, setupStore: any) {
     }
 }
 
-function createOptions(pinia: any, id: any, options: any) {
+function createOptionsStore(pinia: any, id: any, options: any) {
     /**
      *  options => states, getters, function
      *  */
-    const store = reactive(createApis(pinia, id))
+    let store: any
     let storeScope
     const result = pinia.scope.run(() => {
         storeScope = effectScope() // 创建单独的独立作用域 隔离进行操作 并且能够单独滴停止Store的作用域
+        store = reactive(createApis(pinia, id, storeScope))
         return storeScope.run(() => complierOptions(pinia, store, id, options))
     })
 
 
-    return setStore(pinia, store, id, result)
+    return setStore(pinia, store, id, result, options.state, false)
 }
 
-function setStore(pinia: any, store: any, id: any, result: any) {
+function setStore(pinia: any, store: any, id: any, result: any, state: any, isSetup: any) {
     pinia.store.set(id, store)
     store.$id = id
+    state && (store.$reset = createReset(store, state, isSetup))
     Object.assign(store, result)
     return store
 }

@@ -3,6 +3,7 @@
     <div>{{ count2.count }}</div>
     <div>{{ count2.doubleCount }}</div>
     <button @click="change">add</button>
+    <button @click="reset">reset</button>
 </template>
 
 <script setup lang="ts">
@@ -12,6 +13,9 @@ const change = () => {
     count2.$patch({
         count : 500
     })
+}
+const reset = () => {
+    count2.$reset()
 }
 </script>
 
