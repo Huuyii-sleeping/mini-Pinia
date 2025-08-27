@@ -1,7 +1,7 @@
 import { computed, effectScope, inject, isReactive, isRef, reactive, toRefs } from "vue"
 import { formatArgs, isComputed, isFunction, subscription } from "./utils"
 import { piniaSymbol } from "./global"
-import { actionList, createOnActions, createPatch, createReset, createSubscribe } from "./api"
+import { actionList, createDispose, createOnActions, createPatch, createReset, createSubscribe } from "./api"
 
 export function defineStore(...args: any[]) { // return function
     const { id, options, setup } = formatArgs(args)
@@ -30,7 +30,8 @@ function createApis(pinia: any, id: any, scope: any) {
     return {
         $patch: createPatch(pinia, id),
         $subscribe: createSubscribe(pinia, id, scope),
-        $onAction: createOnActions()
+        $onAction: createOnActions(),
+        $dispose: createDispose(pinia, id, scope)
     }
 }
 
