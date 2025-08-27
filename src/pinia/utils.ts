@@ -61,3 +61,11 @@ export const subscription = {
         list.forEach((cb: any) => cb(...args));
     }
 }
+
+export function createState(pinia: any,id: any){
+    const store = pinia.store.get(id)
+    Object.defineProperty(store, '$state',{
+        get: () => pinia.state.value[id],
+        set: (newState) => store.$patch((state: any) => Object.assign(state, newState))
+    })
+}

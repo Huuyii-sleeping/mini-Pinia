@@ -1,5 +1,5 @@
 import { computed, effectScope, inject, isReactive, isRef, reactive, toRefs } from "vue"
-import { formatArgs, isComputed, isFunction, subscription } from "./utils"
+import { createState, formatArgs, isComputed, isFunction, subscription } from "./utils"
 import { piniaSymbol } from "./global"
 import { actionList, createDispose, createOnActions, createPatch, createReset, createSubscribe } from "./api"
 
@@ -31,7 +31,7 @@ function createApis(pinia: any, id: any, scope: any) {
         $patch: createPatch(pinia, id),
         $subscribe: createSubscribe(pinia, id, scope),
         $onAction: createOnActions(),
-        $dispose: createDispose(pinia, id, scope)
+        $dispose: createDispose(pinia, id, scope),
     }
 }
 
@@ -84,6 +84,7 @@ function setStore(pinia: any, store: any, id: any, result: any, state: any, isSe
     store.$id = id
     state && (store.$reset = createReset(store, state, isSetup))
     Object.assign(store, result)
+    createState(pinia, id)
     return store
 }
 

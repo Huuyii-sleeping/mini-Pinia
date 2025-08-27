@@ -5,6 +5,7 @@
     <button @click="change">add</button>
     <button @click="reset">reset</button>
     <button @click="dispose">dispose</button>
+    <button @click="state">state</button>
 </template>
 
 <script setup lang="ts">
@@ -36,6 +37,18 @@ count1.$onAction(({ after, onError }) => {
 // 响应式什么的都会进行销毁操作
 const dispose = () => {
     count1.$dispose()
+}
+const state = () => {
+    count1.$state = {
+        count: 10,
+        todoList: [
+            {
+                id: 1,
+                content: 'test',
+                completed: true,
+            }
+        ]
+    }
 }
 </script>
 
