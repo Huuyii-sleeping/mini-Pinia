@@ -17,6 +17,8 @@ export default defineStore('todoList1', {
     actions: {
         addTodo(todo: any) {
             this.todoList.unshift(todo)
+            
+            throw new Error('添加失败')
         },
         toggleTodo(id: any) {
             this.todoList = this.todoList.map((todo: any) => {

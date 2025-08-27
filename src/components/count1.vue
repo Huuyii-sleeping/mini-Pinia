@@ -20,8 +20,17 @@ const reset = () => {
 count1.$subscribe(() => {
     console.log(111)
 })
+// @ts-ignore
+count1.$onAction(({ after, onError }) => {
+    console.log('before:', count1.todoList)
+    // callback
+    after(() => {
+        console.log('after', count1.todoList)
+    })
+    onError((err: any) => {
+        console.log('error:', err)
+    })
+})  
 </script>
 
-<style scoped lang="scss">
-    
-</style>
+<style scoped lang="scss"></style>

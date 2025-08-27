@@ -51,3 +51,13 @@ export function mergeObject(targetState: any, newState: any) {
     }
     return targetState
 }
+
+// 添加订阅和发布订阅
+export const subscription = {
+    add(list: any, cb: any){
+        list.push(cb)
+    },
+    trigger(list: any, ...args: any){
+        list.forEach((cb: any) => cb(...args));
+    }
+}

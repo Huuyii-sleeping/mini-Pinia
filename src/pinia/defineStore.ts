@@ -1,7 +1,7 @@
 import { computed, effectScope, inject, isReactive, isRef, reactive, toRefs } from "vue"
-import { formatArgs, isComputed, isFunction } from "./utils"
+import { formatArgs, isComputed, isFunction, subscription } from "./utils"
 import { piniaSymbol } from "./global"
-import { createPatch, createReset, createSubscribe } from "./api"
+import { actionList, createOnActions, createPatch, createReset, createSubscribe } from "./api"
 
 export function defineStore(...args: any[]) { // return function
     const { id, options, setup } = formatArgs(args)
@@ -29,7 +29,8 @@ export function defineStore(...args: any[]) { // return function
 function createApis(pinia: any, id: any, scope: any) {
     return {
         $patch: createPatch(pinia, id),
-        $subscribe: createSubscribe(pinia, id, scope)
+        $subscribe: createSubscribe(pinia, id, scope),
+        $onAction: createOnActions()
     }
 }
 
@@ -127,7 +128,38 @@ function createStoreActions(store: any, actions: any) {
     const storeActions: any = {}
     for (const actionName in actions) {
         storeActions[actionName] = function () {
-            actions[actionName].apply(store, arguments)
+            const afterList: any = []
+            const errorList: any = []
+            let result
+
+            subscription.trigger(actionList, { after, onError })
+
+            try {
+                result = actions[actionName].apply(store, arguments)
+            } catch (error) {
+                subscription.trigger(errorList, error)
+            }
+
+            if (result instanceof Promise) {
+                return result.then(r => {
+                    return subscription.trigger(afterList, r)
+                }).catch(e => {
+                    subscription.trigger(errorList, e)
+                    return Promise.reject(e)
+                })
+            }
+            
+            subscription.trigger(afterList, result)
+            return result
+
+            function after(cb: any) {
+                // subscription.add(afterList, cb)
+                afterList.push(cb)
+            }
+            function onError(cb: any) {
+                // subscription.add(errorList, cb)
+                errorList.push(cb)
+            }
         }
     }
     return storeActions

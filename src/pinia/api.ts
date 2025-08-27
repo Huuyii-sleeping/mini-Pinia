@@ -1,5 +1,7 @@
 import { isRef, watch } from "vue"
-import { isComputed, isFunction, mergeObject } from "./utils"
+import { isComputed, isFunction, mergeObject, subscription } from "./utils"
+
+export const actionList: any = []
 
 export function createPatch(pinia: any, id: any) {
     return function $patch(stateOrFn: any) {
@@ -35,12 +37,18 @@ export function createReset(store: any, stateFn: any, isSetup: any) {
 }
 
 export function createSubscribe(pinia: any, id: any, scope: any) {
-    console.log(scope)
     return function $subscribe(callback: any, options = {}) {
         scope.run(() => {
             return watch(pinia.state.value[id], state => {
                 callback({ storeId: id }, state)
             }, options)
         })
-    } 
+        return scope.stop
+    }
+}
+
+export function createOnActions() {
+    return function $onAction(cb: any) {
+        subscription.add(actionList, cb)
+    }
 }
