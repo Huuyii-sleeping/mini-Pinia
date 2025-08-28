@@ -1,4 +1,4 @@
-import { effectScope, ref, useAttrs } from "vue"
+import { effectScope, ref } from "vue"
 import { piniaSymbol } from "./global"
 
 export function createPinia() {
