@@ -1,4 +1,4 @@
-import { effectScope, ref } from "vue"
+import { effectScope, ref, useAttrs } from "vue"
 import { piniaSymbol } from "./global"
 
 export function createPinia() {
@@ -8,12 +8,20 @@ export function createPinia() {
     const state = scope.run(() => { // stop
         return ref({})
     })
+    const plugins: any[] = []
+
+    function use(cb: any){
+        plugins.push(cb)
+        return use
+    }
 
     return {
         store,
         scope, // use to stop effect
         state,
-        install
+        install,
+        plugins,
+        use,
     }
 }
 

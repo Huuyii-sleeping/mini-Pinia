@@ -85,7 +85,19 @@ function setStore(pinia: any, store: any, id: any, result: any, state: any, isSe
     state && (store.$reset = createReset(store, state, isSetup))
     Object.assign(store, result)
     createState(pinia, id)
+    runPlugins(pinia, store)
+    
     return store
+}
+
+function runPlugins(pinia: any, store: any){
+    pinia.plugins.forEach((plugin: any) => {
+        const res = plugin({ store }) // have return will assgin
+
+        if(res){
+            Object.assign(store, res)
+        }
+    })
 }
 
 function complierOptions(pinia: any, store: any, id: any, options: any) {
